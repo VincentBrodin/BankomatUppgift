@@ -17,4 +17,10 @@ internal class Bank {
 	internal void RemoveAccount(Account account) {
 		Accounts.Remove(account);
 	}
+
+	internal List<string> ListAllAccounts() {
+		int namePadding = Accounts.Max(a => a.FullName.Length);
+		int amountPadding = Accounts.Max(a => a.AmountString.Length);
+		return Accounts.ConvertAll(a => $"[{a.Id}] {a.FullName.PadRight(namePadding)} {a.AmountString.PadLeft(amountPadding)}");
+	}
 }

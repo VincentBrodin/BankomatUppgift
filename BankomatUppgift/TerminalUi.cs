@@ -15,7 +15,7 @@ internal class TerminalUi {
 
 	public bool MainMenu() {
 		const string prompt = "Vad vill du göra: ";
-		string[] options = ["Sätt in pengar", "Ta ut pengar", "Överför pengar", "Visa alla konton", "Skapa konto", "Tabort konto", "Avsluta programmet"];
+		List<string> options = ["Sätt in pengar", "Ta ut pengar", "Överför pengar", "Visa alla konton", "Skapa konto", "Tabort konto", "Avsluta programmet"];
 
 		Tools.SetPosition(0, 0);
 		Console.Clear();
@@ -53,15 +53,8 @@ internal class TerminalUi {
 		Tools.SetPosition(0, 0);
 		Console.Clear();
 		const string prompt = "Välj ett konto att föra in pengar i: ";
-		int namePadding = bank.Accounts.Max(a => a.FullName.Length);
-		int amountPadding = bank.Accounts.Max(a => a.AmountString.Length);
 
-		// Prepare options for the menu
-		string[] options = bank.Accounts
-			.Select(a => $"{a.FullName.PadRight(namePadding)} {a.AmountString.PadLeft(amountPadding)}")
-			.ToArray();
-
-		Menu menu = new(prompt, options);
+		Menu menu = new(prompt, bank.ListAllAccounts());
 		int index = menu.GetValue();
 		if(index == -1) {
 			Tools.WriteError("Överföringen avbröts av användaren.");
@@ -116,15 +109,8 @@ internal class TerminalUi {
 		Tools.SetPosition(0, 0);
 		Console.Clear();
 		const string prompt = "Välj ett konto att ta ut pengar ifrån: ";
-		int namePadding = bank.Accounts.Max(a => a.FullName.Length);
-		int amountPadding = bank.Accounts.Max(a => a.AmountString.Length);
 
-		// Prepare options for the menu
-		string[] options = bank.Accounts
-			.Select(a => $"{a.FullName.PadRight(namePadding)} {a.AmountString.PadLeft(amountPadding)}")
-			.ToArray();
-
-		Menu menu = new(prompt, options);
+		Menu menu = new(prompt, bank.ListAllAccounts());
 		int index = menu.GetValue();
 		if(index == -1) {
 
@@ -181,30 +167,21 @@ internal class TerminalUi {
 	public void TransferUi() {
 		Tools.SetPosition(0, 0);
 		Console.Clear();
-		int namePadding = bank.Accounts.Max(a => a.FullName.Length);
-		int amountPadding = bank.Accounts.Max(a => a.AmountString.Length);
 
-		// Prepare options for the menu
-		string[] options = bank.Accounts
-			.Select(a => $"{a.FullName.PadRight(namePadding)} {a.AmountString.PadLeft(amountPadding)}")
-			.ToArray();
-
-		Menu menu = new("Välj ett konto att ta pengar ifrån: ", options);
+		Menu menu = new("Välj ett konto att ta pengar ifrån: ", bank.ListAllAccounts());
 		int index = menu.GetValue();
 		if(index == -1) {
 			Tools.WriteError("Överföringen avbröts av användaren.");
 			Tools.PromptInputToContinue();
 			return;
 		}
-		bool[] values = new bool[options.Length];
-		values[index] = true;
-		bool[] disabled = new bool[options.Length];
-		disabled[index] = true;
+		bool[] state = new bool[bank.Accounts.Count];
+		state[index] = true;
 		Account accountA = bank.Accounts[index];
 
 		Tools.SetPosition(0, 0);
 		Console.Clear();
-		menu = new Menu("Välj ett konto att föra in pengar i: ", options, values, disabled);
+		menu = new Menu("Välj ett konto att föra in pengar i: ", bank.ListAllAccounts(), state, state);
 
 		index = menu.GetValue(index);
 		if(index == -1) {
@@ -320,14 +297,8 @@ internal class TerminalUi {
 		Tools.SetPosition(0, 0);
 		Console.Clear();
 		const string prompt = "Välj ett konto att tabort: ";
-		int namePadding = bank.Accounts.Max(a => a.FullName.Length);
 
-		// Prepare options for the menu
-		string[] options = bank.Accounts
-			.Select(a => $"{a.FullName.PadRight(namePadding)}")
-			.ToArray();
-
-		Menu menu = new(prompt, options);
+		Menu menu = new(prompt, bank.ListAllAccounts());
 		int index = menu.GetValue();
 		if(index == -1) {
 
@@ -356,9 +327,7 @@ internal class TerminalUi {
 		int namePadding = bank.Accounts.Max(a => a.FullName.Length);
 		const string prompt = "Välj konto";
 		// Prepare options for the menu
-		List<string> options = bank.Accounts
-			.Select(a => $"[{a.Id}] {a.FullName.PadRight(namePadding)}")
-			.ToList();
+		List<string> options = bank.ListAllAccounts();
 		options.Add("Visa information");
 		bool[] state = new bool[options.Count];
 		int startIndex = 0;
@@ -366,7 +335,7 @@ internal class TerminalUi {
 			Tools.SetPosition(0, 0);
 			Console.Clear();
 
-			Menu menu = new(prompt, options.ToArray(), state, state);
+			Menu menu = new(prompt, options, state);
 			int index = menu.GetValue(startIndex);
 			if(index == -1) {
 				return;
@@ -376,7 +345,7 @@ internal class TerminalUi {
 			}
 			startIndex = index;
 
-			state[index] = true;
+			state[index] = !state[index];
 		}
 		for(int i = 0; i < state.Length; i++) {
 			if(!state[i]) { continue; }

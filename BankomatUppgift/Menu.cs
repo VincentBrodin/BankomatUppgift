@@ -1,19 +1,26 @@
 ﻿namespace BankomatUppgift;
 internal class Menu {
 	private readonly string prompt;
-	private readonly string[] options;
+	private readonly List<string> options;
 	private readonly bool[] state;
 	private readonly bool[] disabled;
 
 	private const string TUTORIAL = "[Använd pil upp, ner och enter för att välja. ESC för att stänga]";
 
-	public Menu(string prompt, string[] options) {
+	public Menu(string prompt, List<string> options) {
 		this.prompt = prompt;
 		this.options = options;
-		state = new bool[options.Length];
-		disabled = new bool[options.Length];
+		state = new bool[options.Count];
+		disabled = new bool[options.Count];
 	}
-	public Menu(string prompt, string[] options, bool[] state, bool[] disabled) {
+	public Menu(string prompt, List<string> options, bool[] state) {
+		this.prompt = prompt;
+		this.options = options;
+		this.state = state;
+		disabled = new bool[options.Count];
+	}
+
+	public Menu(string prompt, List<string> options, bool[] state, bool[] disabled) {
 		this.prompt = prompt;
 		this.options = options;
 		this.state = state;
@@ -25,12 +32,12 @@ internal class Menu {
 		Console.WriteLine(TUTORIAL);
 
 		(_, int offset) = Console.GetCursorPosition();
-		int max = offset + options.Length - 1;
+		int max = offset + options.Count - 1;
 		Tools.SetPosition(0, max);
 		Tools.SetPosition(0, offset);
 
 		Console.ForegroundColor = ConsoleColor.DarkGray;
-		for(int i = 0; i < options.Length; i++) {
+		for(int i = 0; i < options.Count; i++) {
 			string option = options[i];
 			if(state[i]) {
 				Console.ForegroundColor = ConsoleColor.DarkGreen;

@@ -74,8 +74,6 @@ internal class Account {
 		return TryWithdrawal(amount) && otherAccount.TryDeposit(amount);
 	}
 
-
-
 	public bool Deposit(Bank bank, decimal amount, bool animate = false) {
 		bool valid = TryDeposit(amount);
 		if(valid) {
@@ -92,7 +90,6 @@ internal class Account {
 	public bool TryDeposit(decimal amount) {
 		return 0m < amount;
 	}
-
 
 	public bool Withdrawal(Bank bank, decimal amount, bool animate = false) {
 		bool valid = TryWithdrawal(amount);
@@ -111,8 +108,7 @@ internal class Account {
 		return 0m < amount && amount <= Balance;
 	}
 
-
-	public void PlayAnimation() {
+	public static void PlayAnimation() {
 		(int left, int top) = Console.GetCursorPosition();
 		Console.WriteLine($"[{new string('-', 50)}]");
 		Tools.SetPosition(0, top + 1);

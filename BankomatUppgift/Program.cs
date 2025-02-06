@@ -40,8 +40,9 @@ namespace BankomatUppgift {
 				birthDay = birthDay.AddMonths(-rnd.Next(0, 11));
 				birthDay = birthDay.AddDays(-rnd.Next(0, 364));
 				Account account = bank.AddAccount(firstName, lastName, birthDay);
-				// Tar ett random värde mellan 0-1,000,000 och sedan multiplicerar det med ett värde från 0-1 för att få decimal tal
-				decimal depositAmount = (decimal)(rnd.NextDouble() * rnd.Next(0, 1000000));
+				// Tar ett random värde mellan 0-100,000 och sedan multiplicerar det med ett värde från 0-1 för att få decimal tal
+				// Round * 100 / 100 gör så att värdet har max 2 decimaler
+				decimal depositAmount = (decimal)Math.Round((rnd.NextDouble() * rnd.Next(0, 100000)*100)/100);
 				account.Deposit(bank, depositAmount);
 			}
 		}
