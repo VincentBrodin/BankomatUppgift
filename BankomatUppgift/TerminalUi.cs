@@ -35,6 +35,9 @@ internal class TerminalUi {
 			case 3:
 				ListAccountsUi();
 				break;
+			//case 4:
+				//ListAllReceiptsUi(); Buggy
+				//break;
 			case 4:
 				AddAccountUi();
 				break;
@@ -49,6 +52,9 @@ internal class TerminalUi {
 		}
 		return true;
 	}
+
+
+
 	public void DepositUi() {
 		Tools.SetPosition(0, 0);
 		Console.Clear();
@@ -352,6 +358,35 @@ internal class TerminalUi {
 			Account account = bank.Accounts[i];
 			account.LookUp(bank, true);
 			Tools.WriteSuccsess($"[{account.Id}] {account.FullName} ({account.BirthDay} - {account.Age} år) - {account.AmountString} | Skapat - {account.CreatedDate}");
+		}
+		Tools.PromptInputToContinue();
+	}
+	public void ListAllReceiptsUi() {
+		const string prompt = "Välj tranaktion";
+		List<string> options = bank.ListAllReceipts();
+		options.Add("Visa information");
+		bool[] state = new bool[options.Count];
+		int startIndex = 0;
+		while(true) {
+			Tools.SetPosition(0, 0);
+			Console.Clear();
+
+			Menu menu = new(prompt, options, state);
+			int index = menu.GetValue(startIndex);
+			if(index == -1) {
+				return;
+			}
+			else if(index == options.Count - 1) {
+				break;
+			}
+			startIndex = index;
+
+			state[index] = !state[index];
+		}
+		for(int i = 0; i < state.Length; i++) {
+			if(!state[i]) { continue; }
+			Receipt receipt = bank.Receipts[i];
+			Tools.WriteSuccsess($"{receipt.TransactionId}");
 		}
 		Tools.PromptInputToContinue();
 	}

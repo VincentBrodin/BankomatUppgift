@@ -23,4 +23,8 @@ internal class Bank {
 		int amountPadding = Accounts.Max(a => a.AmountString.Length);
 		return Accounts.ConvertAll(a => $"[{a.Id}] {a.FullName.PadRight(namePadding)} {a.AmountString.PadLeft(amountPadding)}");
 	}
+
+	internal List<string> ListAllReceipts() {
+		return Receipts.OrderByDescending(r => r.Time).ToList().ConvertAll(r => $"{r.TransactionId} - {r.Time} - {r.Type}");
+	}
 }
